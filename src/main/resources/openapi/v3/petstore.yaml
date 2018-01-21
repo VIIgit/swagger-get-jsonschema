@@ -1,0 +1,306 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  license:
+    name: MIT
+servers:
+  - url: http://petstore.swagger.io/v1
+paths:
+  /pets:
+    get:
+      summary: List all pets
+      operationId: listPets
+      tags:
+        - pets
+      parameters:
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: An paged array of pets
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Pets"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create a pet
+      operationId: createPets
+      tags:
+        - pets
+      responses:
+        '201':
+          description: Null response
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /pets/{petId}:
+    get:
+      summary: Info for a specific pet
+      operationId: showPetById
+      tags:
+        - pets
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: The id of the pet to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pets"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /person:
+    put:
+      summary: Info for a specific pet
+      operationId: addPerson
+      tags:
+        - pets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Person"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"   
+                                            
+components:
+  schemas:
+    Pet:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        tag:
+          type: string
+    Pets:
+      type: array
+      title: All Pets
+      items:
+        $ref: "#/components/schemas/Pet"
+        
+    Person:        
+      title: Person Title
+      description: Person Descritpion
+      type: object
+      required:
+      - name
+      - age
+      properties:
+        name:
+          type: string
+          description: First and Last name
+          minLength: 4
+          maxLength: 40
+          default: Jeremy Dorn
+        status:
+          type: string
+          readOnly: true
+          example: Active
+        nonce:
+          type: string
+          title: one time number
+          writeOnly: true
+        age:
+          type: integer
+          title: Age Title
+          description: Age Descritpion
+          default: 25
+          minimum: 18
+          maximum: 99
+        favorite_color:
+          type: string
+          format: color
+          title: favorite color
+          default: '#ffa500'
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+        units:
+          type: integer
+          multipleOf: 5
+          default: 25
+          minimum: 10
+          maximum: 100
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+        pets:
+          type: array 
+          items:
+            $ref: "#/components/schemas/Pet"
+          example:
+          - id: 1
+            name: Mickey
+          - id: 2
+            name: Mouse       
+        category:
+          $ref: "./petstore-common.yaml#/components/schemas/Category"
+        tags:
+          type: array 
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+                example: C
+              value:
+                type: string
+                example: C Value
+          example:
+          - key: "A"
+            value: A Value
+          - key: "B"
+            value: B Value   
+        Note:
+          $ref: "#/components/schemas/Story"
+    Story:
+      allOf:
+      - title: Headline
+        type: object
+        properties:
+          title: 
+            type: string
+            example: H1
+      - type: object
+        properties:
+          teaser: 
+            type: string
+            example: H1 teaser
+                              
+    _Person:        
+      title: Person
+      type: object
+      properties:
+        title: 
+          type: string
+          example: Person
+        type: 
+          type: string
+          example: object
+        properties:
+          type: object
+          properties:
+            name:
+              type: object
+              properties: 
+                type: 
+                  type: string
+                  example: string
+                description: 
+                  type: string
+                  example: First and Last name
+                minLength: 
+                  type: integer
+                  example: 4
+                default: 
+                  type: string
+                  example: Jeremy Dorn
+            age:
+              type: object
+              title: Age title
+              description: Age Description
+              properties: 
+                type: 
+                  type: string
+                  example: integer
+                default: 
+                  type: integer
+                  example: 25
+                minimum: 
+                  type: integer
+                  title: Minimum Age title      
+                  description: Minimum Age descripton                  
+                  example: 18
+                maximum: 
+                  type: integer
+                  example: 99
+            favorite_color:
+              type: object
+              properties: 
+                type: 
+                  type: string
+                  example: string
+                format: 
+                  type: string
+                  example: color
+                title: 
+                  type: string
+                  example: favorite color
+                default: 
+                  type: string
+                  example: "#ffa500"
+            gender:
+              type: object
+              properties: 
+                type: 
+                  type: string
+                  example: string
+                enum: 
+                  type: array
+                  items:
+                    type: string
+                  example:
+                  - male
+                  - female
+
+                      
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

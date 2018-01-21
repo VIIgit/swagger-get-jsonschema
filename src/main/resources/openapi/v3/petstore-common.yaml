@@ -1,0 +1,24 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Swagger Petstore Common
+  license:
+    name: MIT
+servers:
+  - url: http://petstore.swagger.io/v1
+paths: {}
+                                            
+components:
+  schemas:
+    Category:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Category A
