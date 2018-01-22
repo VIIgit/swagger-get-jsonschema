@@ -36,18 +36,13 @@ public class OpenApiSchemaAppender {
 
 		for (Entry<String, PathItem> entry : entrySet) {
 
-			// PathItem schemaPathItem = new PathItem();
-			System.err.println(entry.getKey());
-			PathItem pathItem = entry.getValue();
-
-			Operation put = pathItem.getPut();
-			if (put != null) {
-				Operation extractPut = extractPut(openAPI, put, resolverCache);
-				PathItem pathItem2 = new PathItem();
-				pathItem2.setPut(extractPut);
-				openAPI.getPaths().addPathItem("/schema" + entry.getKey(), pathItem2);
+			Operation putSource = entry.getValue().getPut();
+			if (putSource != null) {
+				Operation putTarget = extractPut(openAPI, putSource, resolverCache);
+				PathItem pathItemTarget = new PathItem();
+				pathItemTarget.setPut(putTarget);
+				openAPI.getPaths().addPathItem("/schema" + entry.getKey(), pathItemTarget);
 			}
-
 		}
 		return openAPI;
 	}
@@ -98,7 +93,7 @@ public class OpenApiSchemaAppender {
 
 		MediaType mediaType = new MediaType();
 		mediaType.setSchema(schemaAsSchema);
-		Content addMediaType = new Content().addMediaType("application/json", mediaType);
+		Content addMediaType = new Content().addMediaType("application/schema+json", mediaType);
 
 		ApiResponse apiResponse = new ApiResponse();
 		apiResponse.setContent(addMediaType);
